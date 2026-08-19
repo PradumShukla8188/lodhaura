@@ -1,0 +1,38 @@
+{
+  "name": "Lodhaura Village Portal",
+  "short_name": "Lodhaura",
+  "description": "Official digital portal for Lodhaura village, Hardoi, Uttar Pradesh",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F766E",
+  "theme_color": "#0F766E",
+  "orientation": "portrait-primary",
+  "lang": "en-IN",
+  "categories": ["government", "social", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Donate",
+      "url": "/donation",
+      "description": "Support village projects"
+    },
+    {
+      "name": "Services",
+      "url": "/services",
+      "description": "Panchayat services"
+    }
+  ]
+}
