@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2, Mail, MapPin, Phone, Shield, Heart, Flame, Zap } from "lucide-react";
@@ -9,10 +9,12 @@ import { PageHeader } from "@/components/PageHeader";
 import { SectionTitle } from "@/components/SectionTitle";
 import { MapEmbed } from "@/components/MapEmbed";
 import { villageInfo, emergencyContacts } from "@/lib/village-data";
+import { formApi } from "@/lib/api-services";
 import { contactSchema, type ContactFormData } from "@/lib/auth-schemas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -26,16 +28,22 @@ const emergencyIcons = {
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<ContactFormData>({
+  const { register, control, handleSubmit, formState: { errors }, reset } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
+    mode: "onTouched",
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: ContactFormData) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    toast.success("Message sent! Panchayat will respond within 48 hours.");
-    reset();
-    setLoading(false);
+    try {
+      await formApi.submitContact(data);
+      toast.success("Message sent! Panchayat will respond within 48 hours.");
+      reset();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to send message.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,7 +74,18 @@ export default function ContactPage() {
                     </div>
                     <div className="space-y-2">
                       <Label>Phone (optional)</Label>
-                      <Input {...register("phone")} />
+                      <Controller
+                        control={control}
+                        name="phone"
+                        render={({ field }) => (
+                          <PhoneInput
+                            placeholder="Enter phone number"
+                            defaultCountry="IN"
+                            error={errors.phone?.message}
+                            {...field}
+                          />
+                        )}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label>Subject</Label>
@@ -90,11 +109,11 @@ export default function ContactPage() {
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Phone className="h-5 w-5 text-primary" />
-                  +91 98765 43210
+                  +91 8188898587
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Mail className="h-5 w-5 text-primary" />
-                  panchayat@lodhaura.in
+                  pradumshukla1133@gmail.com
                 </div>
               </div>
             </div>

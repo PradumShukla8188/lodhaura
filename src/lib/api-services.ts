@@ -1,4 +1,10 @@
 import api from "./api";
+import { 
+  type InvestorContactFormData, 
+  type ComplaintFormData, 
+  type SuggestionFormData, 
+  type ContactFormData 
+} from "./auth-schemas";
 
 export interface ApiImage {
   _id: string;
@@ -104,4 +110,90 @@ export const donationApi = {
     razorpay_signature: string;
     donationId: string;
   }) => api.post("/donations/verify-payment", data),
+};
+
+export const formApi = {
+  submitInvestorInquiry: (data: InvestorContactFormData) => api.post("/investors", {
+    name: data.fullName,
+    organization: data.organization,
+    email: data.email,
+    phone: data.phone,
+    investmentType: data.investmentType,
+    website: data.website,
+    message: data.message,
+  }),
+  submitComplaint: (data: ComplaintFormData) => api.post("/complaints", data),
+  submitSuggestion: (data: SuggestionFormData) => api.post("/suggestions", data),
+  submitContact: (data: ContactFormData) => api.post("/contacts", data),
+  subscribeNewsletter: (data: { email: string }) => api.post("/newsletters/subscribe", data),
+};
+
+export const governanceApi = {
+  getDepartments: () => api.get("/departments"),
+  createDepartment: (data: any) => api.post("/departments", data),
+  updateDepartment: (id: string, data: any) => api.put(`/departments/${id}`, data),
+  deleteDepartment: (id: string) => api.delete(`/departments/${id}`),
+
+  getRoles: () => api.get("/roles"),
+  createRole: (data: any) => api.post("/roles", data),
+  updateRole: (id: string, data: any) => api.put(`/roles/${id}`, data),
+  deleteRole: (id: string) => api.delete(`/roles/${id}`),
+
+  getGovUsers: () => api.get("/gov-users"),
+  createGovUser: (data: any) => api.post("/gov-users", data),
+  updateGovUser: (id: string, data: any) => api.put(`/gov-users/${id}`, data),
+  deleteGovUser: (id: string) => api.delete(`/gov-users/${id}`),
+
+  getSchemes: () => api.get("/schemes"),
+  createScheme: (data: any) => api.post("/schemes", data),
+  updateScheme: (id: string, data: any) => api.patch(`/schemes/${id}`, data),
+  deleteScheme: (id: string) => api.delete(`/schemes/${id}`),
+
+  getProjects: () => api.get("/projects"),
+  getProjectById: (id: string) => api.get(`/projects/${id}`),
+  createProject: (data: any) => api.post("/projects", data),
+  updateProject: (id: string, data: any) => api.put(`/projects/${id}`, data),
+  deleteProject: (id: string) => api.delete(`/projects/${id}`),
+  getProjectProgress: (id: string) => api.get(`/projects/${id}/progress`),
+  addProjectProgress: (id: string, data: any) => api.post(`/projects/${id}/progress`, data),
+
+  getDocuments: () => api.get("/documents"),
+  createDocument: (data: any) => api.post("/documents", data),
+  updateDocument: (id: string, data: any) => api.put(`/documents/${id}`, data),
+  deleteDocument: (id: string) => api.delete(`/documents/${id}`),
+
+  getTransactions: () => api.get("/funds"),
+  getProjectTransactions: (projectId: string) => api.get(`/funds/project/${projectId}`),
+  createTransaction: (data: any) => api.post("/funds", data),
+
+  getAuditLogs: () => api.get("/audit"),
+
+  getTasks: () => api.get("/tasks"),
+  getMyTasks: () => api.get("/tasks/my-tasks"),
+  createTask: (data: any) => api.post("/tasks", data),
+  updateTask: (id: string, data: any) => api.put(`/tasks/${id}`, data),
+  deleteTask: (id: string) => api.delete(`/tasks/${id}`),
+
+  getMeetings: () => api.get("/meetings"),
+  createMeeting: (data: any) => api.post("/meetings", data),
+  updateMeeting: (id: string, data: any) => api.put(`/meetings/${id}`, data),
+  deleteMeeting: (id: string) => api.delete(`/meetings/${id}`),
+
+  getComplaints: () => api.get("/complaints"),
+  updateComplaint: (id: string, data: any) => api.put(`/complaints/${id}`, data),
+
+  getGovernanceAnalytics: () => api.get("/analytics"),
+  getExportUrl: (type: 'projects' | 'transactions' | 'complaints') => `${process.env.NEXT_PUBLIC_API_URL}/api/v1/analytics/export/${type}`,
+
+  // Event Management
+  getEvents: (admin = false) => api.get(`/events${admin ? '?admin=true' : ''}`),
+  getEventById: (id: string) => api.get(`/events/${id}`),
+  createEvent: (data: any) => api.post("/events", data),
+  updateEvent: (id: string, data: any) => api.put(`/events/${id}`, data),
+  deleteEvent: (id: string) => api.delete(`/events/${id}`),
+  registerForEvent: (id: string, data: any) => api.post(`/events/${id}/register`, data),
+  donateToEvent: (id: string, data: any) => api.post(`/events/${id}/donate`, data),
+  getEventParticipants: (id: string) => api.get(`/events/${id}/participants`),
+  updateParticipantStatus: (eventId: string, regId: string, data: any) => api.put(`/events/${eventId}/participants/${regId}`, data),
+  getEventDonations: (id: string) => api.get(`/events/${id}/donations`),
 };

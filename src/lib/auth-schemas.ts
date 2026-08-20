@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
 export const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -60,13 +61,13 @@ export const changePasswordSchema = z
 
 export const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().optional(),
+  phone: z.string().refine((val) => !val || isValidPhoneNumber(val), "Invalid phone number").optional(),
   bio: z.string().max(500, "Bio must be under 500 characters").optional(),
 });
 
 export const complaintSchema = z.object({
   name: z.string().min(2, "Name is required"),
-  phone: z.string().min(10, "Enter a valid phone number"),
+  phone: z.string().min(1, "Phone number is required").refine(isValidPhoneNumber, "Invalid phone number"),
   category: z.string().min(1, "Select a category"),
   subject: z.string().min(5, "Subject must be at least 5 characters"),
   description: z.string().min(20, "Please describe your complaint in detail"),
@@ -82,9 +83,23 @@ export const suggestionSchema = z.object({
 export const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Enter a valid email"),
-  phone: z.string().optional(),
+  phone: z.string().refine((val) => !val || isValidPhoneNumber(val), "Invalid phone number").optional(),
   subject: z.string().min(3, "Subject is required"),
   message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+export const investorContactSchema = z.object({
+  fullName: z.string().min(2, "Full Name is required"),
+  organization: z.string().optional(),
+  email: z.string().email("Enter a valid email"),
+  phone: z.string().min(1, "Phone number is required").refine(isValidPhoneNumber, "Invalid phone number"),
+  investmentType: z.string().min(1, "Please select an investment type"),
+  website: z.string().url("Enter a valid URL").optional().or(z.literal("")),
+  message: z.string().min(20, "Please describe your proposal in detail"),
+});
+
+export const newsletterSchema = z.object({
+  email: z.string().email("Enter a valid email"),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -96,3 +111,5 @@ export type ProfileFormData = z.infer<typeof profileSchema>;
 export type ComplaintFormData = z.infer<typeof complaintSchema>;
 export type SuggestionFormData = z.infer<typeof suggestionSchema>;
 export type ContactFormData = z.infer<typeof contactSchema>;
+export type InvestorContactFormData = z.infer<typeof investorContactSchema>;
+export type NewsletterFormData = z.infer<typeof newsletterSchema>;

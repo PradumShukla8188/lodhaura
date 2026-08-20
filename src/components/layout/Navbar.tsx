@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,6 +32,7 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   const toggleTheme = () => {
@@ -47,7 +49,9 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full">
+    <div className="w-full">
+      <div className="h-[65px] w-full shrink-0" aria-hidden="true" />
+      <header className="fixed top-0 z-50 w-full">
       <div className="glass-strong border-b border-white/20">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
@@ -67,16 +71,22 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <ul className="hidden items-center gap-0.5 xl:flex">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={cn(
+                      "rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary",
+                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
             <li className="relative">
               <button
                 type="button"
@@ -94,16 +104,22 @@ export function Navbar() {
                     exit={{ opacity: 0, y: -8 }}
                     className="glass-strong absolute right-0 top-full mt-1 min-w-[180px] rounded-xl border border-white/20 py-2 shadow-xl"
                   >
-                    {moreNavLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setMoreOpen(false)}
-                        className="block px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
+                    {moreNavLinks.map((link) => {
+                      const isActive = pathname.startsWith(link.href);
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setMoreOpen(false)}
+                          className={cn(
+                            "block px-4 py-2 text-sm transition-colors hover:bg-primary/10 hover:text-primary",
+                            isActive ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground"
+                          )}
+                        >
+                          {link.label}
+                        </Link>
+                      );
+                    })}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -192,27 +208,39 @@ export function Navbar() {
             className="glass-strong border-b border-white/20 xl:hidden"
           >
             <div className="space-y-1 px-4 py-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block rounded-xl px-4 py-3 text-sm font-medium transition-colors hover:bg-primary/10"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "block rounded-xl px-4 py-3 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary",
+                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
               <p className="px-4 pt-2 text-xs font-semibold uppercase text-muted-foreground">More</p>
-              {moreNavLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block rounded-xl px-4 py-2.5 text-sm font-medium transition-colors hover:bg-primary/10"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {moreNavLinks.map((link) => {
+                const isActive = pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "block rounded-xl px-4 py-2.5 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary",
+                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
               <div className="flex items-center gap-2 px-4 pt-2 text-xs text-muted-foreground">
                 <MapPin className="h-3.5 w-3.5" />
                 {villageInfo.district}, {villageInfo.state}
@@ -246,5 +274,6 @@ export function Navbar() {
         )}
       </AnimatePresence>
     </header>
+    </div>
   );
 }

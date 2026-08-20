@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { FileText, Home, Landmark, Phone, Loader2 } from "lucide-react";
@@ -9,10 +9,12 @@ import { PageHeader } from "@/components/PageHeader";
 import { SectionTitle } from "@/components/SectionTitle";
 import { onlineServices } from "@/lib/village-data";
 import { complaintSchema, suggestionSchema, type ComplaintFormData, type SuggestionFormData } from "@/lib/auth-schemas";
+import { formApi } from "@/lib/api-services";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -31,26 +33,38 @@ export default function ServicesPage() {
   const complaintForm = useForm<ComplaintFormData>({
     resolver: zodResolver(complaintSchema),
     defaultValues: { category: "general" },
+    mode: "onTouched",
   });
 
   const suggestionForm = useForm<SuggestionFormData>({
     resolver: zodResolver(suggestionSchema),
+    mode: "onTouched",
   });
 
   const onComplaint = async (data: ComplaintFormData) => {
     setComplaintLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    toast.success("Complaint submitted! Reference: LV-" + Date.now().toString().slice(-6));
-    complaintForm.reset();
-    setComplaintLoading(false);
+    try {
+      await formApi.submitComplaint(data);
+      toast.success("Complaint submitted! Reference: LV-" + Date.now().toString().slice(-6));
+      complaintForm.reset();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to submit complaint.");
+    } finally {
+      setComplaintLoading(false);
+    }
   };
 
   const onSuggestion = async (data: SuggestionFormData) => {
     setSuggestionLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    toast.success("Thank you for your suggestion!");
-    suggestionForm.reset();
-    setSuggestionLoading(false);
+    try {
+      await formApi.submitSuggestion(data);
+      toast.success("Thank you for your suggestion!");
+      suggestionForm.reset();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to submit suggestion.");
+    } finally {
+      setSuggestionLoading(false);
+    }
   };
 
   return (
@@ -108,7 +122,18 @@ export default function ServicesPage() {
                       </div>
                       <div className="space-y-2">
                         <Label>Phone</Label>
-                        <Input error={complaintForm.formState.errors.phone?.message} {...complaintForm.register("phone")} />
+                        <Controller
+                          control={complaintForm.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <PhoneInput
+                              placeholder="Enter phone number"
+                              defaultCountry="IN"
+                              error={complaintForm.formState.errors.phone?.message}
+                              {...field}
+                            />
+                          )}
+                        />
                       </div>
                     </div>
                     <div className="space-y-2">

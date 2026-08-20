@@ -27,7 +27,7 @@ export function ResetPasswordForm() {
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
-    mode: "onChange",
+    mode: "onTouched",
   });
 
   const password = watch("password") || "";

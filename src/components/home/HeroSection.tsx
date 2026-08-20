@@ -29,7 +29,7 @@ export function HeroSection() {
             </Badge>
 
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              <span className="bg-gradient-village bg-clip-text text-transparent">
+              <span className="text-gradient-village">
                 {villageInfo.name}
               </span>{" "}
               Village Portal

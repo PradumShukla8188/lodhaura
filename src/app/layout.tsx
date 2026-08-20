@@ -63,7 +63,7 @@ export default function RootLayout({
       <head>
         <VillageStructuredData />
       </head>
-      <body className="flex min-h-full flex-col antialiased">
+      <body className="flex min-h-full flex-col antialiased overflow-x-hidden">
         <Providers>
           <Navbar />
           <main className="flex-1">{children}</main>

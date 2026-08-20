@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 interface ThemeColorPickerProps {
   variant?: "icon" | "full";
@@ -34,19 +34,25 @@ export function ThemeColorPicker({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={className}>
+      <DropdownMenuTrigger
+        className={cn(
+          className,
+          variant === "icon"
+            ? buttonVariants({ variant: "ghost", size: "icon" })
+            : buttonVariants({ variant: "outline", size: "sm", className: "gap-2" })
+        )}
+        aria-label={variant === "icon" ? "Choose color theme" : undefined}
+      >
         {variant === "icon" ? (
-          <Button variant="ghost" size="icon" aria-label="Choose color theme">
-            <Palette className="h-5 w-5" />
-          </Button>
+          <Palette className="h-5 w-5" />
         ) : (
-          <Button variant="outline" size="sm" className="gap-2">
+          <>
             <span
               className="h-4 w-4 rounded-full ring-2 ring-white/50"
               style={{ backgroundColor: themePresets[currentTheme].swatch }}
             />
             Theme
-          </Button>
+          </>
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 p-2">

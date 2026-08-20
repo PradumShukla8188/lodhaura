@@ -16,10 +16,17 @@ import {
   LogOut,
   Loader2,
   LayoutDashboard,
+  BarChart,
+  Download,
+  Activity,
+  IndianRupee,
+  Map,
+  MessageSquareWarning,
+  CheckSquare
 } from "lucide-react";
 import type { RootState } from "@/store/store";
 import { logout, updateUser } from "@/store/slices/authSlice";
-import { profileApi, type ProfileData } from "@/lib/api-services";
+import { profileApi, governanceApi, type ProfileData } from "@/lib/api-services";
 import {
   profileSchema,
   changePasswordSchema,
@@ -53,14 +60,15 @@ function StatCard({
   color: string;
 }) {
   return (
-    <Card className="glass border-white/20">
-      <CardContent className="flex items-center gap-4 p-5">
-        <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl bg-muted", color)}>
+    <Card className="group relative overflow-hidden glass border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5">
+      <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/5 blur-2xl transition-all group-hover:bg-primary/10" />
+      <CardContent className="relative flex items-center gap-4 p-5">
+        <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-background to-muted shadow-inner ring-1 ring-white/10", color)}>
           <Icon className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-2xl font-bold">{value}</p>
-          <p className="text-xs text-muted-foreground">{label}</p>
+          <p className="text-2xl font-bold tracking-tight">{value}</p>
+          <p className="text-xs font-medium text-muted-foreground">{label}</p>
         </div>
       </CardContent>
     </Card>
@@ -68,11 +76,16 @@ function StatCard({
 }
 
 export default function DashboardPage() {
+  const [mounted, setMounted] = useState(false);
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("overview");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { data, isLoading } = useQuery({
     queryKey: ["profile-me"],
@@ -81,6 +94,12 @@ export default function DashboardPage() {
       return res.data.data as ProfileData;
     },
     enabled: isAuthenticated,
+  });
+
+  const { data: analyticsRes, isLoading: analyticsLoading } = useQuery({
+    queryKey: ["governanceAnalytics"],
+    queryFn: async () => (await governanceApi.getGovernanceAnalytics()).data,
+    enabled: isAuthenticated && ((user as any)?.role === 'admin' || (user as any)?.role === 'government'),
   });
 
   const profileForm = useForm<ProfileFormData>({
@@ -133,9 +152,11 @@ export default function DashboardPage() {
     router.push("/");
   };
 
-  if (!user) return null;
+  if (!mounted || !user) return null;
 
   const stats = data?.stats || { blogs: 0, images: 0, videos: 0 };
+  const isGovUser = (user as any)?.role === 'admin' || (user as any)?.role === 'government';
+  const analytics = analyticsRes?.data;
 
   return (
     <>
@@ -147,44 +168,98 @@ export default function DashboardPage() {
       <section className="py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           {/* Profile header */}
-          <Card className="glass-strong mb-8 overflow-hidden border-white/20">
-            <div className="h-24 bg-gradient-village opacity-90" />
-            <CardContent className="relative px-6 pb-6">
-              <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div className="flex items-end gap-4">
+          {/* Profile header */}
+          <div className="relative mb-8 overflow-hidden rounded-2xl glass-strong border-white/20 p-6 sm:p-8">
+            <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
+            
+            <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full bg-gradient-village blur opacity-50" />
                   <Avatar
                     size="lg"
                     fallback={user.name[0]}
                     src={user.avatar}
-                    className="h-24 w-24 border-4 border-background bg-gradient-village text-3xl text-white"
+                    className="relative h-24 w-24 border-2 border-white/50 dark:border-white/10 text-3xl shadow-xl bg-gradient-village text-white"
                   />
-                  <div className="pb-1">
-                    <h2 className="text-2xl font-bold">{user.name}</h2>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
-                    <Badge className="mt-2 capitalize">{user.role}</Badge>
-                  </div>
                 </div>
-                <Button variant="outline" className="gap-2" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </Button>
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{user.name}</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
+                  <Badge variant="secondary" className="mt-3 capitalize shadow-sm border-primary/20 bg-primary/10 text-primary">
+                    {user.role}
+                  </Badge>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+              <Button variant="destructive" size="sm" className="gap-2 self-start sm:self-center shadow-lg transition-transform hover:scale-105" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          </div>
 
           <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6 flex h-auto flex-wrap gap-1">
-              <TabsTrigger value="overview"><LayoutDashboard className="mr-1.5 h-4 w-4" />Overview</TabsTrigger>
-              <TabsTrigger value="blogs"><FileText className="mr-1.5 h-4 w-4" />My Blogs</TabsTrigger>
-              <TabsTrigger value="photos"><ImageIcon className="mr-1.5 h-4 w-4" />My Photos</TabsTrigger>
-              <TabsTrigger value="videos"><Video className="mr-1.5 h-4 w-4" />My Videos</TabsTrigger>
-              <TabsTrigger value="profile"><User className="mr-1.5 h-4 w-4" />Profile</TabsTrigger>
-              <TabsTrigger value="settings"><Settings className="mr-1.5 h-4 w-4" />Settings</TabsTrigger>
+            <TabsList className="mb-8 flex h-auto flex-wrap gap-2 bg-transparent p-0">
+              {[
+                { id: "overview", icon: LayoutDashboard, label: "Overview" },
+                { id: "blogs", icon: FileText, label: "My Blogs" },
+                { id: "photos", icon: ImageIcon, label: "My Photos" },
+                { id: "videos", icon: Video, label: "My Videos" },
+                { id: "profile", icon: User, label: "Profile" },
+                { id: "settings", icon: Settings, label: "Settings" },
+              ].map((tab) => (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  className={cn(
+                    "rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
+                    "data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20",
+                    "data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-white/5 data-[state=inactive]:hover:text-foreground"
+                  )}
+                >
+                  <tab.icon className="mr-2 h-4 w-4" />
+                  {tab.label}
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             <TabsContent value="overview">
               <div className="space-y-6">
+                
+                {isGovUser && (
+                  <div className="space-y-4 mb-10 pb-10 border-b border-white/10">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <h3 className="text-xl font-bold tracking-tight">Governance Analytics</h3>
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" size="sm" className="gap-2 text-xs h-8" onClick={() => window.open(governanceApi.getExportUrl('projects'))}>
+                          <Download className="h-3 w-3" /> Projects CSV
+                        </Button>
+                        <Button variant="outline" size="sm" className="gap-2 text-xs h-8" onClick={() => window.open(governanceApi.getExportUrl('transactions'))}>
+                          <Download className="h-3 w-3" /> Financials CSV
+                        </Button>
+                        <Button variant="outline" size="sm" className="gap-2 text-xs h-8" onClick={() => window.open(governanceApi.getExportUrl('complaints'))}>
+                          <Download className="h-3 w-3" /> Grievances CSV
+                        </Button>
+                      </div>
+                    </div>
+
+                    {analyticsLoading ? (
+                      <div className="grid gap-4 sm:grid-cols-4"><Skeleton className="h-24 rounded-xl" /><Skeleton className="h-24 rounded-xl" /><Skeleton className="h-24 rounded-xl" /><Skeleton className="h-24 rounded-xl" /></div>
+                    ) : (
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <StatCard label="Active Projects" value={analytics?.totalProjects || 0} icon={Map} color="text-blue-500" />
+                        <StatCard label="Available Funds (₹)" value={(analytics?.totalBudget || 0) - (analytics?.totalSpent || 0)} icon={IndianRupee} color="text-green-500" />
+                        <StatCard label="Pending Grievances" value={analytics?.activeComplaints || 0} icon={MessageSquareWarning} color="text-orange-500" />
+                        <StatCard label="Pending Tasks" value={analytics?.pendingTasks || 0} icon={CheckSquare} color="text-purple-500" />
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <DashboardUploadForms />
+                
+                <h3 className="text-lg font-bold tracking-tight mb-2">My Uploads</h3>
                 {isLoading ? (
                 <div className="grid gap-4 sm:grid-cols-3">
                   {[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
@@ -202,6 +277,7 @@ export default function DashboardPage() {
             <TabsContent value="blogs">
               <ContentList
                 loading={isLoading}
+                icon={FileText}
                 empty="No blogs yet. Share your village stories!"
                 items={(data?.blogs || []).map((b) => ({
                   id: b._id,
@@ -216,13 +292,17 @@ export default function DashboardPage() {
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {isLoading && [1, 2, 3].map((i) => <Skeleton key={i} className="aspect-square rounded-xl" />)}
                 {!isLoading && (data?.images?.length || 0) === 0 && (
-                  <EmptyState message="No photos uploaded yet." />
+                  <div className="col-span-full">
+                    <EmptyState message="No photos uploaded yet." icon={ImageIcon} />
+                  </div>
                 )}
                 {data?.images?.map((img) => (
-                  <Card key={img._id} className="glass overflow-hidden border-white/20">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.url} alt={img.caption || "Photo"} className="aspect-square w-full object-cover" />
-                    <CardContent className="p-3">
+                  <Card key={img._id} className="group glass overflow-hidden border-white/20">
+                    <div className="overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img.url} alt={img.caption || "Photo"} className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    </div>
+                    <CardContent className="p-3 relative bg-background/50 backdrop-blur-sm border-t border-white/10">
                       <p className="truncate text-sm font-medium">{img.caption || "Untitled"}</p>
                       <Badge variant="outline" className="mt-1 capitalize text-xs">{img.status || "active"}</Badge>
                     </CardContent>
@@ -234,6 +314,7 @@ export default function DashboardPage() {
             <TabsContent value="videos">
               <ContentList
                 loading={isLoading}
+                icon={Video}
                 empty="No videos uploaded yet."
                 items={(data?.videos || []).map((v) => ({
                   id: v._id,
@@ -326,27 +407,34 @@ function ContentList({
   loading,
   empty,
   items,
+  icon: Icon = FileText,
 }: {
   loading: boolean;
   empty: string;
   items: { id: string; title: string; status: string; date: string }[];
+  icon?: React.ElementType;
 }) {
   if (loading) {
     return (
       <div className="space-y-3">
-        {[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+        {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
       </div>
     );
   }
-  if (items.length === 0) return <EmptyState message={empty} />;
+  if (items.length === 0) return <EmptyState message={empty} icon={Icon} />;
   return (
     <div className="space-y-3">
       {items.map((item) => (
-        <Card key={item.id} className="glass border-white/20">
-          <CardContent className="flex items-center justify-between p-5">
-            <div>
-              <p className="font-medium">{item.title}</p>
-              <p className="text-xs text-muted-foreground">{item.date}</p>
+        <Card key={item.id} className="group glass overflow-hidden border-white/20 transition-all hover:bg-white/5">
+          <CardContent className="flex items-center justify-between p-4 sm:p-5">
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Icon className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="font-semibold tracking-tight transition-colors group-hover:text-primary">{item.title}</p>
+                <p className="text-xs font-medium text-muted-foreground">{item.date}</p>
+              </div>
             </div>
             <Badge variant={item.status === "approved" || item.status === "active" ? "secondary" : "outline"} className="capitalize">
               {item.status}
@@ -358,10 +446,13 @@ function ContentList({
   );
 }
 
-function EmptyState({ message }: { message: string }) {
+function EmptyState({ message, icon: Icon = FileText }: { message: string, icon?: React.ElementType }) {
   return (
-    <Card className="glass border-white/20">
-      <CardContent className="py-12 text-center text-muted-foreground">{message}</CardContent>
-    </Card>
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 bg-muted/20 py-16 text-center">
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground/50">
+        <Icon className="h-8 w-8" />
+      </div>
+      <p className="text-sm font-medium text-muted-foreground">{message}</p>
+    </div>
   );
 }

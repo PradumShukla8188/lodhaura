@@ -7,12 +7,12 @@ export const villageInfo = {
   state: "Uttar Pradesh",
   country: "India",
   pincode: "241204",
-  population: 3200,
-  households: 520,
-  families: 520,
-  schools: 2,
-  temples: 4,
-  area: "2.8 km²",
+  population: "1500+",
+  households: "100+",
+  families: "100+",
+  schools: "1+",
+  temples: "1+",
+  area: "4.8 km²",
   establishedYear: 1852,
   primaryLanguage: "Hindi & Awadhi",
   coordinates: {
@@ -36,11 +36,11 @@ export const villageInfo = {
 };
 
 export const villageStats = [
-  { label: "Population", value: "3,200+", icon: "users" as const },
-  { label: "Families", value: "520", icon: "home" as const },
-  { label: "Schools", value: "2", icon: "school" as const },
-  { label: "Temples", value: "4", icon: "landmark" as const },
-  { label: "Area", value: "2.8 km²", icon: "sparkles" as const },
+  { label: "Population", value: "1,500+", icon: "users" as const },
+  { label: "Families", value: "100+", icon: "home" as const },
+  { label: "Schools", value: "1", icon: "school" as const },
+  { label: "Temples", value: "1", icon: "landmark" as const },
+  { label: "Area", value: "4.8 km²", icon: "sparkles" as const },
   { label: "Years of Heritage", value: "170+", icon: "heart" as const },
 ];
 
@@ -87,6 +87,7 @@ export const moreNavLinks = [
   { label: "Schemes", href: "/government-schemes" },
   { label: "Temple", href: "/temple" },
   { label: "School", href: "/school" },
+  { label: "Investors", href: "/investors" },
   { label: "Donate", href: "/donation" },
   { label: "Search", href: "/search" },
 ];
@@ -98,6 +99,7 @@ export const footerLinks = {
     { label: "Videos", href: "/videos" },
     { label: "Events Calendar", href: "/events" },
     { label: "Blogs", href: "/blogs" },
+    { label: "Investors", href: "/investors" },
   ],
   services: [
     { label: "Panchayat Services", href: "/services" },
@@ -206,7 +208,7 @@ export const emergencyContacts = [
   { name: "Police", number: "100", icon: "shield" as const },
   { name: "Ambulance", number: "108", icon: "heart" as const },
   { name: "Fire", number: "101", icon: "flame" as const },
-  { name: "Panchayat Helpline", number: "+91 98765 43210", icon: "phone" as const },
+  { name: "Panchayat Helpline", number: "+91 8188898587", icon: "phone" as const },
   { name: "Health Center", number: "+91 98765 43220", icon: "heart" as const },
   { name: "Electricity Complaint", number: "1912", icon: "zap" as const },
 ];
@@ -275,3 +277,38 @@ export function getPastEvents() {
   const now = new Date();
   return events.filter((e) => new Date(e.date) < now).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
+
+// Investors Page Data
+export const whyInvestReasons = [
+  { title: "Growing Local Economy", description: "Our village is experiencing steady economic growth, backed by local panchayat initiatives and digital connectivity.", icon: "trending-up" as const },
+  { title: "Skilled Local Workforce", description: "A young, educated, and eager workforce ready to contribute to manufacturing, services, and agricultural sectors.", icon: "users" as const },
+  { title: "Strategic Location", description: "Well-connected to major highways and district centers, making logistics and transportation efficient.", icon: "map-pin" as const },
+  { title: "Community Support", description: "A welcoming local community and supportive gram panchayat that actively encourages sustainable development.", icon: "heart-handshake" as const },
+  { title: "Available Resources", description: "Rich agricultural land, ample water supply, and growing solar infrastructure to support new ventures.", icon: "leaf" as const },
+  { title: "Long-Term Growth", description: "Invest in a community that is building for the future. Early partnerships offer significant long-term potential.", icon: "line-chart" as const },
+];
+
+export const investmentOpportunities = [
+  { title: "Agriculture & Farming", description: "Modern farming techniques, organic produce, and agro-processing units.", icon: "tractor" as const },
+  { title: "Small-Scale Manufacturing", description: "Local production facilities utilizing our skilled workforce.", icon: "factory" as const },
+  { title: "Tourism & Hospitality", description: "Eco-tourism, rural homestays, and cultural heritage experiences.", icon: "tent" as const },
+  { title: "Dairy & Livestock", description: "Milk processing, veterinary services, and modern dairy farms.", icon: "milk" as const },
+  { title: "Digital & Tech Services", description: "BPOs, IT training centers, and digital service hubs.", icon: "laptop" as const },
+  { title: "Renewable Energy", description: "Solar power installations and sustainable energy projects.", icon: "sun" as const },
+];
+
+export const investmentBenefits = [
+  "Access to untapped local markets",
+  "Dedicated support from the Gram Panchayat",
+  "Lower operational and establishment costs",
+  "Opportunity for significant social impact",
+  "Building long-lasting community partnerships",
+  "Contributing to sustainable rural development",
+];
+
+export const communityImpacts = [
+  { title: "Employment Generation", value: "Providing jobs to local youth prevents urban migration." },
+  { title: "Skill Development", value: "Training local workers creates a highly capable workforce." },
+  { title: "Better Infrastructure", value: "Investments often lead to improved roads, power, and facilities." },
+  { title: "Economic Resilience", value: "Diversified businesses strengthen the entire village economy." },
+];

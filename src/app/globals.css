@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @source "../**/*.{js,ts,jsx,tsx,mdx}";
 
@@ -241,4 +242,55 @@ a {
 ::selection {
   background: color-mix(in srgb, var(--primary) 30%, transparent);
   color: var(--foreground);
+}
+
+/* ── Jodit Editor Theme Overrides ── */
+.jodit-wrapper .jodit-container:not(.jodit_inline),
+.jodit-wrapper .jodit-workplace,
+.jodit-wrapper .jodit-wysiwyg,
+.jodit-wrapper .jodit-editor {
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+}
+.jodit-wrapper .jodit-toolbar__box {
+  background-color: var(--muted) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+.jodit-wrapper .jodit-status-bar {
+  background-color: var(--muted) !important;
+  border-top: 1px solid var(--border) !important;
+  color: var(--muted-foreground) !important;
+}
+.jodit-wrapper .jodit-ui-button__icon {
+  fill: var(--muted-foreground) !important;
+}
+.jodit-wrapper .jodit-ui-button__text {
+  color: var(--muted-foreground) !important;
+}
+.jodit-wrapper .jodit-ui-button:hover,
+.jodit-wrapper .jodit-ui-button:hover .jodit-ui-button__text {
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+}
+.jodit-wrapper .jodit-ui-button:hover .jodit-ui-button__icon {
+  fill: var(--foreground) !important;
+}
+.jodit-wrapper .jodit-ui-button[aria-pressed="true"] {
+  background-color: var(--primary) !important;
+}
+.jodit-wrapper .jodit-ui-button[aria-pressed="true"] .jodit-ui-button__icon {
+  fill: var(--primary-foreground) !important;
+}
+.jodit-wrapper .jodit-ui-button[aria-pressed="true"] .jodit-ui-button__text {
+  color: var(--primary-foreground) !important;
+}
+
+/* Override Jodit's native CSS variables */
+body {
+  --jd-color-background-default: transparent !important;
+  --jd-color-panel: var(--muted) !important;
+  --jd-color-border: var(--border) !important;
+  --jd-color-text: var(--foreground) !important;
 }

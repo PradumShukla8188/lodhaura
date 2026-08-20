@@ -35,7 +35,7 @@ export function SignupForm() {
     formState: { errors },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    mode: "onChange",
+    mode: "onTouched",
   });
 
   const password = watch("password") || "";

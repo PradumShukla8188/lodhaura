@@ -54,10 +54,8 @@ function DropdownMenu({ children }: DropdownMenuProps) {
 function DropdownMenuTrigger({
   children,
   className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const { open, setOpen } = useDropdown();
 
   return (
@@ -66,6 +64,7 @@ function DropdownMenuTrigger({
       onClick={() => setOpen(!open)}
       className={cn("outline-none", className)}
       aria-expanded={open}
+      {...props}
     >
       {children}
     </button>
