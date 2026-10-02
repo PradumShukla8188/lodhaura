@@ -102,7 +102,7 @@ export default function ContactPage() {
                 </CardContent>
               </Card>
 
-              <div className="mt-8 space-y-3">
+              {/* <div className="mt-8 space-y-3">
                 <div className="flex items-center gap-3 text-sm">
                   <MapPin className="h-5 w-5 text-primary" />
                   {villageInfo.name}, {villageInfo.district}, {villageInfo.state} — {villageInfo.pincode}
@@ -115,12 +115,12 @@ export default function ContactPage() {
                   <Mail className="h-5 w-5 text-primary" />
                   pradumshukla1133@gmail.com
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div>
               <SectionTitle title="Location" />
-              <MapEmbed height="300px" />
+              <MapEmbed height="460px" />
             </div>
           </div>
         </div>

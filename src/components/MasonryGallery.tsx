@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Heart, MessageCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart, MessageCircle, X } from "lucide-react";
 import { galleryCategories } from "@/lib/village-data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ interface MasonryGalleryProps {
 export function MasonryGallery({ images, className }: MasonryGalleryProps) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [liked, setLiked] = useState<Set<string>>(new Set());
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const filtered =
     activeCategory === "All"
@@ -66,7 +67,10 @@ export function MasonryGallery({ images, className }: MasonryGalleryProps) {
             className="mb-4 break-inside-avoid"
           >
             <div className="group glass overflow-hidden rounded-2xl border-white/20">
-              <div className="relative aspect-auto">
+              <div 
+                className="relative aspect-auto overflow-hidden cursor-pointer"
+                onClick={() => setSelectedImage(image.url)}
+              >
                 <Image
                   src={image.url}
                   alt={image.title}
@@ -103,6 +107,43 @@ export function MasonryGallery({ images, className }: MasonryGalleryProps) {
           </motion.div>
         ))}
       </div>
+
+      {/* Full Screen Image Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+            onClick={() => setSelectedImage(null)}
+          >
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute right-4 top-4 z-50 rounded-full text-white hover:bg-white/20"
+              onClick={() => setSelectedImage(null)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              transition={{ type: "spring", duration: 0.3 }}
+              className="relative max-h-full max-w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={selectedImage} 
+                alt="Fullscreen View" 
+                className="max-h-[90vh] max-w-[90vw] rounded-xl object-contain shadow-2xl" 
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

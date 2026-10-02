@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   MapPin,
   Mail,
@@ -12,7 +15,12 @@ import { villageInfo, footerLinks } from "@/lib/village-data";
 import { Badge } from "@/components/ui/badge";
 
 export function Footer() {
+  const pathname = usePathname();
   const year = new Date().getFullYear();
+
+  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <footer className="relative mt-auto overflow-hidden border-t border-border/60 bg-gradient-to-b from-background to-muted/30">

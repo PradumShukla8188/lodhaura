@@ -12,8 +12,8 @@ export function MapEmbed({
   height = "400px",
   title = "Lodhaura Village Location",
 }: MapEmbedProps) {
-  const { lat, lng } = villageInfo.coordinates;
-  const src = `https://maps.google.com/maps?q=${lat},${lng}&z=14&output=embed`;
+  const query = encodeURIComponent(`${villageInfo.name} ${villageInfo.district} ${villageInfo.pincode}`);
+  const src = `https://maps.google.com/maps?q=${query}&z=14&output=embed`;
 
   return (
     <div className={cn("overflow-hidden rounded-2xl border border-border/60 shadow-lg", className)}>

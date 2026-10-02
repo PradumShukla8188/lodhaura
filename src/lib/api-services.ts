@@ -93,6 +93,18 @@ export const contentApi = {
   getNews: () => api.get("/news"),
   getSchemes: () => api.get("/schemes"),
   search: (q: string) => api.get("/search", { params: { q } }),
+  getEmergencyContacts: () => api.get("/emergency-contacts"),
+  getLocalServices: (category?: string, search?: string) => 
+    api.get("/local-services", { params: { category, search } }),
+  registerLocalService: (data: any) => api.post("/local-services", data),
+  getAgricultureServices: (type?: string, search?: string) =>
+    api.get("/agriculture-services", { params: { type, search } }),
+  registerAgricultureService: (data: any) => api.post("/agriculture-services", data),
+  getJobs: (search?: string) => api.get("/jobs", { params: { search } }),
+  createJob: (data: any) => api.post("/jobs", data),
+  getMarketplaceItems: (category?: string, search?: string) => 
+    api.get("/marketplace", { params: { category, search } }),
+  createMarketplaceItem: (data: any) => api.post("/marketplace", data),
 };
 
 export const donationApi = {
@@ -180,6 +192,7 @@ export const governanceApi = {
   deleteMeeting: (id: string) => api.delete(`/meetings/${id}`),
 
   getComplaints: () => api.get("/complaints"),
+  getMyComplaints: () => api.get("/complaints/my-complaints"),
   updateComplaint: (id: string, data: any) => api.put(`/complaints/${id}`, data),
 
   getGovernanceAnalytics: () => api.get("/analytics"),

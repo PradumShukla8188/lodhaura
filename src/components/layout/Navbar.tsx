@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,23 @@ export function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const moreMenuRef = useRef<HTMLLIElement>(null);
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+        setMoreOpen(false);
+      }
+    }
+    if (moreOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [moreOpen]);
+
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
@@ -78,7 +94,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     className={cn(
-                      "rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary",
+                      "whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary",
                       isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
                     )}
                   >
@@ -87,11 +103,11 @@ export function Navbar() {
                 </li>
               );
             })}
-            <li className="relative">
+            <li className="relative" ref={moreMenuRef}>
               <button
                 type="button"
                 onClick={() => setMoreOpen(!moreOpen)}
-                className="flex items-center gap-1 rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                className="flex whitespace-nowrap items-center gap-1 rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
               >
                 More
                 <ChevronDown className={`h-4 w-4 transition-transform ${moreOpen ? "rotate-180" : ""}`} />
@@ -205,7 +221,7 @@ export function Navbar() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="glass-strong border-b border-white/20 xl:hidden"
+            className="glass-strong border-b border-white/20 xl:hidden max-h-[calc(100vh-4rem)] overflow-y-auto"
           >
             <div className="space-y-1 px-4 py-4">
               {navLinks.map((link) => {

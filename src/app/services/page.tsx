@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -105,9 +106,21 @@ export default function ServicesPage() {
       <section className="bg-muted/30 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionTitle title="Feedback & Grievances" />
+          <div className="mb-8 rounded-xl bg-primary/10 border border-primary/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h3 className="text-xl font-bold text-primary">Official UP Jansunwai Portal</h3>
+              <p className="text-muted-foreground mt-1">For official government grievances, we recommend using the Uttar Pradesh Jansunwai system.</p>
+            </div>
+            <Link href="/jansunwai">
+              <Button className="whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90">
+                Go to Jansunwai
+              </Button>
+            </Link>
+          </div>
+
           <Tabs defaultValue="complaint">
             <TabsList>
-              <TabsTrigger value="complaint">File Complaint</TabsTrigger>
+              <TabsTrigger value="complaint">File Local Complaint</TabsTrigger>
               <TabsTrigger value="suggestion">Give Suggestion</TabsTrigger>
             </TabsList>
 

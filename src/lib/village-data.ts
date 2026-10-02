@@ -72,7 +72,9 @@ export const quickLinks = [
 export const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "Help Center", href: "/help-center" },
   { label: "Services", href: "/services" },
+  { label: "Workers", href: "/workers" },
   { label: "Gallery", href: "/gallery" },
   { label: "Videos", href: "/videos" },
   { label: "Blogs", href: "/blogs" },
@@ -83,11 +85,17 @@ export const navLinks = [
 ];
 
 export const moreNavLinks = [
+  { label: "Emergency", href: "/emergency" },
+  { label: "Local Services", href: "/local-services" },
+  { label: "Agriculture", href: "/agriculture" },
+  { label: "Job Board", href: "/jobs" },
+  { label: "Marketplace", href: "/marketplace" },
   { label: "Development", href: "/development-projects" },
   { label: "Schemes", href: "/government-schemes" },
   { label: "Temple", href: "/temple" },
   { label: "School", href: "/school" },
   { label: "Investors", href: "/investors" },
+  { label: "Jansunwai", href: "/jansunwai" },
   { label: "Donate", href: "/donation" },
   { label: "Search", href: "/search" },
 ];
@@ -96,8 +104,8 @@ export const footerLinks = {
   explore: [
     { label: "About Lodhaura", href: "/about" },
     { label: "Photo Gallery", href: "/gallery" },
-    { label: "Videos", href: "/videos" },
-    { label: "Events Calendar", href: "/events" },
+    // { label: "Videos", href: "/videos" },
+    // { label: "Events Calendar", href: "/events" },
     { label: "Blogs", href: "/blogs" },
     { label: "Investors", href: "/investors" },
   ],
@@ -261,7 +269,13 @@ export const searchSuggestions = [
 
 export type Blog = (typeof blogs)[number];
 export type Event = (typeof events)[number];
-export type NewsItem = (typeof newsItems)[number];
+export type NewsItem = (typeof newsItems)[number] & {
+  priority?: 'urgent' | 'high' | 'normal';
+  createdAt?: string;
+  summary?: string;
+  content?: string;
+  attachments?: any[];
+};
 export type Scheme = (typeof governmentSchemes)[number];
 
 export function getBlogBySlug(slug: string) {

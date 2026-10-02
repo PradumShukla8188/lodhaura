@@ -17,7 +17,9 @@ import {
   CheckSquare,
   Users,
   MessageSquareWarning,
-  CalendarDays
+  CalendarDays,
+  Briefcase,
+  Wrench
 } from "lucide-react";
 import type { RootState } from "@/store/store";
 import { logout } from "@/store/slices/authSlice";
@@ -77,6 +79,19 @@ export function UserMenu() {
         <DropdownMenuItem onClick={() => router.push("/dashboard")}>
           <LayoutDashboard className="mr-2 h-4 w-4" />
           My Dashboard
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          Worker Services
+        </div>
+        <DropdownMenuItem onClick={() => router.push("/dashboard/worker-profile")}>
+          <Briefcase className="mr-2 h-4 w-4" />
+          Become a Worker / Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push("/dashboard/worker-requests")}>
+          <Wrench className="mr-2 h-4 w-4" />
+          Jobs & Requests
         </DropdownMenuItem>
         {user.role === "admin" && (
           <DropdownMenuItem onClick={() => router.push("/admin")}>
