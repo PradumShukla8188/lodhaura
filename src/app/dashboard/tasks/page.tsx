@@ -21,8 +21,8 @@ export default function TasksPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({ name: "", description: "", priority: "Medium", assignedTo: "", dueDate: "" });
 
-  const canViewAll = hasPermission(user as any, 'Tasks', 'View') || user?.role === 'admin';
-  const canCreate = hasPermission(user as any, 'Tasks', 'Create') || user?.role === 'admin';
+  const canViewAll = hasPermission(user as any, 'Tasks', 'View') || user?.role === 'admin' || user?.role === 'super_admin';
+  const canCreate = hasPermission(user as any, 'Tasks', 'Create') || user?.role === 'admin' || user?.role === 'super_admin';
 
   const { data: response, isLoading } = useQuery({
     queryKey: ["tasks", canViewAll],
@@ -177,7 +177,7 @@ export default function TasksPage() {
                   </div>
                 </div>
 
-                {(isMine || user?.role === 'admin') && task.status !== 'Completed' && (
+                {(isMine || user?.role === 'admin' || user?.role === 'super_admin') && task.status !== 'Completed' && (
                   <div className="flex gap-2 pt-2">
                     <Button size="sm" variant="outline" className="w-full h-8 text-xs" onClick={() => updateMutation.mutate({ id: task._id, data: { status: 'In Progress', completionPercentage: 50 }})}>
                       Start Working

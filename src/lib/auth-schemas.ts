@@ -112,4 +112,33 @@ export type ComplaintFormData = z.infer<typeof complaintSchema>;
 export type SuggestionFormData = z.infer<typeof suggestionSchema>;
 export type ContactFormData = z.infer<typeof contactSchema>;
 export type InvestorContactFormData = z.infer<typeof investorContactSchema>;
+
+export const registerResidentSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Enter a valid email address").optional().or(z.literal("")),
+  phone: z.string().min(10, "Valid mobile number is required"),
+  password: z.string().min(6, "Password must be at least 6 characters")
+    .regex(/[A-Z]/, "Include at least one uppercase letter")
+    .regex(/[0-9]/, "Include at least one number"),
+  confirmPassword: z.string(),
+  houseNumber: z.string().min(1, "House number is required"),
+  street: z.string().min(1, "Street is required"),
+  village: z.string(),
+  postOffice: z.string().min(1, "Post office is required"),
+  district: z.string().min(1, "District is required"),
+  state: z.string().min(1, "State is required"),
+  pincode: z.string().min(6, "Valid PIN code is required"),
+  dateOfBirth: z.string().optional(),
+  gender: z.string().optional(),
+  maritalStatus: z.string().optional(),
+  occupation: z.string().optional(),
+  educationLevel: z.string().optional(),
+  familyHeadName: z.string().min(1, "Family head name is required"),
+  emergencyContact: z.string().optional()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+export type RegisterResidentFormData = z.infer<typeof registerResidentSchema>;
 export type NewsletterFormData = z.infer<typeof newsletterSchema>;

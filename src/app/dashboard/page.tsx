@@ -10,15 +10,20 @@ import { toast } from "sonner";
 import {
   User, FileText, Image as ImageIcon, Video, Settings, LogOut, Loader2,
   LayoutDashboard, BarChart, Download, Activity, IndianRupee, Map,
-  MessageSquareWarning, CheckSquare, Users, Clock, CheckCircle, XCircle, ToggleRight, ToggleLeft
+  MessageSquareWarning, CheckSquare, Users, Clock, CheckCircle, XCircle, ToggleRight, ToggleLeft, Shield
 } from "lucide-react";
 import type { RootState } from "@/store/store";
 import { logout, updateUser } from "@/store/slices/authSlice";
+import { hasPermission } from "@/lib/rbac-utils";
 import { profileApi, governanceApi, adminApi, type ProfileData } from "@/lib/api-services";
 import { profileSchema, changePasswordSchema, type ProfileFormData, type ChangePasswordFormData } from "@/lib/auth-schemas";
 import { normalizeUser, getApiErrorMessage } from "@/lib/auth-utils";
 import { DashboardUploadForms } from "@/components/dashboard/DashboardUploadForms";
 import { DashboardComplaints } from "@/components/dashboard/DashboardComplaints";
+import { DashboardDocuments } from "@/components/dashboard/DashboardDocuments";
+import { DashboardFamily } from "@/components/dashboard/DashboardFamily";
+import { DashboardUsers } from "@/components/dashboard/DashboardUsers";
+import { DashboardRoles } from "@/components/dashboard/DashboardRoles";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -83,11 +88,11 @@ export default function DashboardPage() {
   const { data: analyticsRes, isLoading: analyticsLoading } = useQuery({
     queryKey: ["governanceAnalytics"],
     queryFn: async () => (await governanceApi.getGovernanceAnalytics()).data,
-    enabled: isAuthenticated && ((user as any)?.role === 'admin' || (user as any)?.role === 'government'),
+    enabled: isAuthenticated && ((user as any)?.role === 'admin' || (user as any)?.role === 'super_admin' || (user as any)?.role === 'government' || hasPermission(user as any, 'Roles', 'View')),
   });
 
   // --- ADMIN DATA ---
-  const isAdmin = user?.role === "admin";
+  const isAdmin = (user as any)?.role === "admin" || (user as any)?.role === "super_admin" || hasPermission(user as any, 'Users', 'View') || hasPermission(user as any, 'Roles', 'View');
   const { data: adminStats, isLoading: adminStatsLoading } = useQuery({
     queryKey: ["admin-dashboard"],
     queryFn: async () => (await adminApi.getDashboard()).data.data,
@@ -185,7 +190,7 @@ export default function DashboardPage() {
   if (!mounted || !user) return null;
 
   const stats = profileRes?.stats || { blogs: 0, images: 0, videos: 0 };
-  const isGovUser = user?.role === 'admin' || user?.role === 'government';
+  const isGovUser = user?.role === 'admin' || user?.role === 'super_admin' || user?.role === 'government' || isAdmin;
   const analytics = analyticsRes?.data;
 
   // Combine content for admin views
@@ -234,6 +239,8 @@ export default function DashboardPage() {
                     <p className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Personal</p>
                     {[
                       { id: "overview", icon: LayoutDashboard, label: "Overview" },
+                      { id: "documents", icon: CheckSquare, label: "My Documents" },
+                      { id: "family", icon: Users, label: "My Household" },
                       { id: "blogs", icon: FileText, label: "My Blogs" },
                       { id: "photos", icon: ImageIcon, label: "My Photos" },
                       { id: "videos", icon: Video, label: "My Videos" },
@@ -263,6 +270,7 @@ export default function DashboardPage() {
                         {[
                           { id: "admin-overview", icon: Activity, label: "Admin Dashboard" },
                           { id: "admin-users", icon: Users, label: "Manage Users" },
+                          { id: "admin-roles", icon: Shield, label: "Role Management" },
                           { id: "admin-content", icon: FileText, label: "Posts & Media" },
                           { id: "admin-approvals", icon: Clock, label: "Approvals" },
                           { id: "admin-settings", icon: Settings, label: "System Settings" },
@@ -339,6 +347,16 @@ export default function DashboardPage() {
                         <StatCard label="Videos Uploaded" value={stats.videos} icon={Video} color="text-accent" />
                       </div>
                     )}
+                  </TabsContent>
+
+                  <TabsContent value="documents" className="mt-0">
+                    <h2 className="text-2xl font-bold tracking-tight mb-6">My Documents</h2>
+                    <DashboardDocuments />
+                  </TabsContent>
+
+                  <TabsContent value="family" className="mt-0">
+                    <h2 className="text-2xl font-bold tracking-tight mb-6">My Household</h2>
+                    <DashboardFamily />
                   </TabsContent>
 
                   <TabsContent value="blogs" className="mt-0">
@@ -441,27 +459,11 @@ export default function DashboardPage() {
                       </TabsContent>
 
                       <TabsContent value="admin-users" className="mt-0">
-                        <h2 className="text-2xl font-bold tracking-tight mb-6">User Management</h2>
-                        <div className="space-y-3">
-                          {adminUsersLoading && [1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
-                          {adminUsers?.map((u: any) => (
-                            <Card key={u._id} className="glass border-white/20 transition-all hover:bg-white/5">
-                              <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
-                                <div>
-                                  <p className="font-semibold">{u.name}</p>
-                                  <p className="text-sm text-muted-foreground">{u.email}</p>
-                                  <div className="mt-2 flex gap-2">
-                                    <Badge variant="outline" className="capitalize">{u.roleId?.displayValue || u.roleId?.name || "User"}</Badge>
-                                    <Badge variant={u.status === "active" ? "secondary" : "outline"} className="capitalize">{u.status}</Badge>
-                                  </div>
-                                </div>
-                                <Button size="sm" variant={u.status === "active" ? "outline" : "default"} className="gap-2" disabled={toggleUser.isPending} onClick={() => toggleUser.mutate(u._id)}>
-                                  {u.status === "active" ? <><ToggleRight className="h-4 w-4" />Disable</> : <><ToggleLeft className="h-4 w-4" />Enable</>}
-                                </Button>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
+                        <DashboardUsers />
+                      </TabsContent>
+
+                      <TabsContent value="admin-roles" className="mt-0">
+                        <DashboardRoles />
                       </TabsContent>
 
                       <TabsContent value="admin-content" className="mt-0">

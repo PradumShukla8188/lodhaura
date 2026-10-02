@@ -15,7 +15,7 @@ import { DataTable, ColumnDef } from "@/components/ui/data-table";
 const MODULES = ["Village Projects", "Government Schemes", "Funds", "Complaints & Issues", "Users", "Roles", "Departments", "Documents", "Audit Logs", "Tasks", "Panchayat Meetings", "Events", "Village Information", "Local Services", "Agriculture Services", "Jobs", "Marketplace", "Emergency Contacts", "Residents", "Website Settings", "Workers"];
 const ACTIONS = ["View", "Create", "Edit", "Delete", "Approve", "Export"];
 
-export default function RolesPage() {
+export function DashboardRoles() {
   const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -189,7 +189,7 @@ export default function RolesPage() {
   ];
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8 mt-16">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <PageHeader 
           title="Role Management" 

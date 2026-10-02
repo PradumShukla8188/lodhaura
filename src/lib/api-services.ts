@@ -59,6 +59,18 @@ export const authApi = {
     api.post("/onBoarding/forgot-password", data),
   resetPassword: (data: { token: string; password: string; confirmPassword: string }) =>
     api.post("/onBoarding/reset-password", data),
+  registerResident: (data: any) =>
+    api.post("/onBoarding/register-resident", data),
+};
+
+export const residentApi = {
+  getProfile: () => api.get("/residents/profile"),
+  updateProfile: (data: any) => api.put("/residents/profile", data),
+  getFamilyMembers: () => api.get("/residents/family"),
+  addFamilyMember: (data: any) => api.post("/residents/family", data),
+  getDocuments: () => api.get("/residents/documents"),
+  updateDocumentStatus: (data: { templateId: string; status: string; uploadedFileUrl?: string }) => 
+    api.put("/residents/documents", data),
 };
 
 export const profileApi = {
@@ -75,7 +87,7 @@ export const profileApi = {
 export const adminApi = {
   getDashboard: () => api.get("/admin/dashboard"),
   getPending: () => api.get("/admin/pending"),
-  getUsers: () => api.get("/admin/users"),
+  getUsers: (params?: { page?: number; limit?: number; search?: string }) => api.get("/admin/users", { params }),
   getContent: () => api.get("/admin/content"),
   toggleUserStatus: (id: string) => api.patch(`/admin/users/${id}/toggle-status`),
   approveContent: (type: string, id: string) =>
@@ -146,10 +158,15 @@ export const governanceApi = {
   updateDepartment: (id: string, data: any) => api.put(`/departments/${id}`, data),
   deleteDepartment: (id: string) => api.delete(`/departments/${id}`),
 
-  getRoles: () => api.get("/roles"),
+  getRoles: (params?: { page?: number; limit?: number; search?: string }) => api.get("/roles", { params }),
   createRole: (data: any) => api.post("/roles", data),
   updateRole: (id: string, data: any) => api.put(`/roles/${id}`, data),
   deleteRole: (id: string) => api.delete(`/roles/${id}`),
+
+  getUsers: (params?: { page?: number; limit?: number; search?: string }) => api.get("/user", { params }),
+  createUser: (data: any) => api.post("/user", data),
+  updateUser: (id: string, data: any) => api.patch(`/user/${id}`, data),
+  deleteUser: (id: string) => api.delete(`/user/${id}`),
 
   getGovUsers: () => api.get("/gov-users"),
   createGovUser: (data: any) => api.post("/gov-users", data),
@@ -181,6 +198,33 @@ export const governanceApi = {
   getAuditLogs: () => api.get("/audit"),
 
   getTasks: () => api.get("/tasks"),
+
+  getAdminEmergencyContacts: (params?: { page?: number; limit?: number; search?: string }) => api.get("/emergency-contacts/admin", { params }),
+  createEmergencyContact: (data: any) => api.post("/emergency-contacts", data),
+  updateEmergencyContact: (id: string, data: any) => api.put(`/emergency-contacts/${id}`, data),
+  deleteEmergencyContact: (id: string) => api.delete(`/emergency-contacts/${id}`),
+  
+  getAdminWorkers: (params?: { page?: number; limit?: number; search?: string }) => api.get("/workers/admin", { params }),
+  verifyWorker: (id: string, isVerified: boolean) => api.patch(`/workers/admin/${id}/verify`, { isVerified }),
+  deleteWorker: (id: string) => api.delete(`/workers/admin/${id}`),
+
+  getAdminJobs: (params?: { page?: number; limit?: number; search?: string }) => api.get("/jobs/admin", { params }),
+  updateJobStatusAdmin: (id: string, status: string) => api.patch(`/jobs/admin/${id}/status`, { status }),
+  deleteJobAdmin: (id: string) => api.delete(`/jobs/admin/${id}`),
+
+  getAdminMarketplaceItems: (params?: { page?: number; limit?: number; search?: string }) => api.get("/marketplace/admin", { params }),
+  updateMarketplaceItemStatusAdmin: (id: string, status: string) => api.patch(`/marketplace/admin/${id}/status`, { status }),
+  deleteMarketplaceItemAdmin: (id: string) => api.delete(`/marketplace/admin/${id}`),
+
+  getAdminLocalServices: (params?: { page?: number; limit?: number; search?: string }) => api.get("/local-services/admin", { params }),
+  updateLocalServiceStatusAdmin: (id: string, verificationStatus: string) => api.patch(`/local-services/admin/${id}/status`, { verificationStatus }),
+  deleteLocalServiceAdmin: (id: string) => api.delete(`/local-services/admin/${id}`),
+
+  getAdminResidents: (params?: { page?: number; limit?: number; search?: string }) => api.get("/residents/admin", { params }),
+  deleteResidentAdmin: (id: string) => api.delete(`/residents/admin/${id}`),
+
+  getVillageInfo: () => api.get("/village/info"),
+  updateVillageInfo: (data: any) => api.patch("/village/info", data),
   getMyTasks: () => api.get("/tasks/my-tasks"),
   createTask: (data: any) => api.post("/tasks", data),
   updateTask: (id: string, data: any) => api.put(`/tasks/${id}`, data),

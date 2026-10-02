@@ -269,7 +269,7 @@ export function Navbar() {
                       My Dashboard
                     </Button>
                   </Link>
-                  {user?.role === "admin" && (
+                  {(user?.role === "admin" || user?.role === "super_admin") && (
                     <Link href="/admin" onClick={() => setMobileOpen(false)}>
                       <Button variant="outline" className="mt-2 w-full">
                         Admin Panel

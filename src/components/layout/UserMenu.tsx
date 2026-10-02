@@ -19,7 +19,12 @@ import {
   MessageSquareWarning,
   CalendarDays,
   Briefcase,
-  Wrench
+  Wrench,
+  Store,
+  Tractor,
+  Info,
+  Phone,
+  Settings
 } from "lucide-react";
 import type { RootState } from "@/store/store";
 import { logout } from "@/store/slices/authSlice";
@@ -93,7 +98,7 @@ export function UserMenu() {
           <Wrench className="mr-2 h-4 w-4" />
           Jobs & Requests
         </DropdownMenuItem>
-        {user.role === "admin" && (
+        {(user.role === "admin" || user.role === "super_admin") && (
           <DropdownMenuItem onClick={() => router.push("/admin")}>
             <Shield className="mr-2 h-4 w-4" />
             Admin Panel
@@ -130,9 +135,9 @@ export function UserMenu() {
             )}
             
             {(hasPermission(user as any, 'Users', 'View') || user.role === 'admin') && (
-              <DropdownMenuItem onClick={() => router.push("/dashboard/gov-users")}>
+              <DropdownMenuItem onClick={() => router.push("/dashboard/users")}>
                 <User className="mr-2 h-4 w-4" />
-                Government Users
+                All Users
               </DropdownMenuItem>
             )}
             
@@ -189,6 +194,69 @@ export function UserMenu() {
               <DropdownMenuItem onClick={() => router.push("/dashboard/complaints")}>
                 <MessageSquareWarning className="mr-2 h-4 w-4" />
                 Public Complaints
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Village Information', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/village-info")}>
+                <Info className="mr-2 h-4 w-4" />
+                Village Information
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Local Services', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/local-services")}>
+                <Store className="mr-2 h-4 w-4" />
+                Local Services
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Agriculture Services', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/agriculture-services")}>
+                <Tractor className="mr-2 h-4 w-4" />
+                Agriculture Services
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Jobs', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/jobs")}>
+                <Briefcase className="mr-2 h-4 w-4" />
+                Jobs & Applications
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Marketplace', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/marketplace")}>
+                <Store className="mr-2 h-4 w-4" />
+                Marketplace Listings
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Emergency Contacts', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/emergency-contacts")}>
+                <Phone className="mr-2 h-4 w-4" />
+                Emergency Contacts
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Residents', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/residents")}>
+                <Users className="mr-2 h-4 w-4" />
+                Residents
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Workers', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/workers")}>
+                <Briefcase className="mr-2 h-4 w-4" />
+                Workers
+              </DropdownMenuItem>
+            )}
+
+            {(hasPermission(user as any, 'Website Settings', 'View') || user.role === 'admin') && (
+              <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}>
+                <Settings className="mr-2 h-4 w-4" />
+                Website Settings
               </DropdownMenuItem>
             )}
           </>

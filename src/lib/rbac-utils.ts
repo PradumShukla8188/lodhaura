@@ -26,19 +26,22 @@ export const hasPermission = (
   if (!user || !user.roleId) return false;
 
   // Super admin check
-  if (user.roleId.name === 'Admin') return true;
+  if (user.roleId?.name === 'super_admin' || user.roleId?.name === 'Admin' || (user as any).role === 'admin' || (user as any).role === 'super_admin') return true;
 
   const allRoles: Role[] = [user.roleId];
   if (user.additionalRoles && Array.isArray(user.additionalRoles)) {
     allRoles.push(...user.additionalRoles);
   }
 
+  const targetModule = moduleName.toLowerCase();
+  const targetAction = actionName.toLowerCase();
+
   for (const role of allRoles) {
     if (role && role.permissions && Array.isArray(role.permissions)) {
       const hasAccess = role.permissions.some(
         (p) =>
-          (p.module === 'ALL' || p.module === moduleName) &&
-          (p.action === 'ALL' || p.action === actionName)
+          (p.module === 'ALL' || p.module?.toLowerCase() === targetModule) &&
+          (p.action === 'ALL' || p.action?.toLowerCase() === targetAction)
       );
       if (hasAccess) return true;
     }

@@ -41,7 +41,7 @@ export function LoginForm() {
       localStorage.setItem("lodhaura_token", token);
       dispatch(setCredentials({ user, token }));
       toast.success(`Welcome back, ${user.name}!`);
-      router.push(user.role === "admin" ? "/admin" : "/dashboard");
+      router.push((user.role === "admin" || user.role === "super_admin") ? "/admin" : "/dashboard");
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Invalid email or password."));
     } finally {
